@@ -1,0 +1,29 @@
+require 'update_script'
+
+desc "Update HSBC"
+task :hsbc do
+  require 'hsbc'
+  parser = HSBC::Parser.new(ENV['HSBC_CSV_PATH'])
+  script = UpdateScript.new(HSBC::Downloader.start, parser)
+  script.update!
+end
+
+namespace :db do
+  desc "Create the database"
+  task :create do
+    require 'db'
+
+    ActiveRecord::Migration.class_eval do
+      create_table :transactions do |t|
+        t.string :account
+        t.string :category
+        t.string :with
+        t.string :raw_with
+        t.decimal :amount
+        t.string :currency
+        t.date :occurred_on
+      end
+    end
+  end
+end
+
