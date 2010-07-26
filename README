@@ -1,0 +1,9 @@
+Saffron is a library I've started to help me better manage my finances.  I'd like to use something like www.mint.com, but because I live in Canada, it's not an option for me.
+
+Saffron is built around a rakefile which should auto-import my recent financial data from the banks I use (first person - while I don't see any reason it can't be used by others, I'm currently building it based only on my requirements).  The following rake tasks are supported:
+
+> rake db:create
+Creates the database to store all transactions
+
+> rake hsbc
+Auto imports the most recent month's transactions from http://hsbc.ca.  Uses environment variables to access any personal information, like account number and password.  Expects the selenium-webdriver gem to be installed, and my Firefox profile is set to auto-save csv files to my Downloads directory.
