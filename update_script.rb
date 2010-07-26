@@ -8,7 +8,7 @@ class UpdateScript
   end
 
   def update!
-    #@downloader.download!
+    @downloader.download!
     transactions = @parser.parse
     transactions.each { |txn| txn.save }
   end
