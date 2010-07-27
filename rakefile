@@ -1,18 +1,60 @@
-require 'update_script'
+require 'lib/saffron'
 
-desc "Update HSBC"
-task :hsbc do
-  require 'hsbc'
-  parser = HSBC::Parser.new(ENV['HSBC_CSV_PATH'])
-  script = UpdateScript.new(HSBC::Downloader.start, parser)
+@countries = {'us' => 'US', 'canada' => 'Canada'}
+@banks = {'ing' => 'ING', 'hsbc' => 'HSBC', 'amex' => 'AMEX', 'capital_one' => 'CapitalOne'}
+
+def update(country, bank)
+  require "lib/banks/#{country}/#{bank}"
+  country_module = Kernel.const_get(@countries[country])
+  bank_module = country_module.const_get(@banks[bank])
+  parser_class = bank_module.const_get('Parser')
+  downloader_class = bank_module.const_get('Downloader')
+
+  csv_path = ENV["#{country.upcase}_#{bank.upcase}_CSV_PATH"]
+  parser = parser_class.new(ENV['ING_CSV_PATH'])
+  script = UpdateScript.new(downloader_class.start, parser)
   script.update!
 end
 
+task :default => ['canada:hsbc', 'canada:ing', 'us:amex', 'us:ing', 'us:capital_one']
+
+namespace :canada do
+
+  desc "Update HSBC"
+  task :hsbc do
+    update 'canada', 'hsbc'
+  end
+
+  desc "Update ING"
+  task :ing do
+    update 'canada', 'ing'
+  end
+
+end
+
+namespace :us do
+
+  desc "Update AMEX"
+  task :amex do
+    update 'us', 'amex'
+  end
+
+  desc "Update ING"
+  task :ing do
+    update 'us', 'ing'
+  end
+
+  desc "Update Capital One"
+  task :capital_one do
+    update 'us', 'capital_one'
+  end
+
+end
+
 namespace :db do
+
   desc "Create the database"
   task :create do
-    require 'db'
-
     ActiveRecord::Migration.class_eval do
       create_table :transactions do |t|
         t.string :account
@@ -25,5 +67,6 @@ namespace :db do
       end
     end
   end
+
 end
 

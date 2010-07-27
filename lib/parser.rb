@@ -1,10 +1,3 @@
-def relative_path(filename)
-  File.expand_path(File.dirname(__FILE__) + "/#{filename}")
-end
-
-require relative_path('db.rb')
-require relative_path('vendor_map.rb')
-
 class Parser
   def initialize(csv_file, map=VendorMap.new)
     @csv_file, @map = csv_file, map
