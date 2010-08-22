@@ -10,3 +10,4 @@ require_relative 'parser'
 require_relative 'update_script'
 require_relative 'vendor_map'
 
+Dir["banks/**/*.rb"].each { |f| require_relative f }
